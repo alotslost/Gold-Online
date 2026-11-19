@@ -1,0 +1,11 @@
+{
+  // 黄金在线：纯静态站（无构建链），跳过安装与构建，直接托管仓库根目录
+  // 依据：阿里云 ESA Pages 官方文档 https://help.aliyun.com/zh/edge-security-acceleration/esa/user-guide/build-pages
+  // installCommand/buildCommand 设为空字符串 = 跳过对应步骤
+  "name": "gold-data",
+  "installCommand": "",
+  "buildCommand": "",
+  "assets": {
+    "directory": "./"
+  }
+}

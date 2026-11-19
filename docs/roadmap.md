@@ -58,13 +58,13 @@
 - [x] localStorage 持久化（`hjzx.position`，js/store/position.js 含脏数据消毒）+ 清空入口（原生 confirm 二次确认）
 - **验证**：已通过——引擎对账 3 样例与手工核算一致（无补仓 4000 份盈亏 -2000；补仓 3000@3.0 后成本 2.6；非交易日补仓顺延生效）；UI 实测 000216 本金 10000 成本 2.5：份额 4000、市值 11214、盈亏 +1214（+12.14%）与手算一致；补仓 3000 后成本 2.5→2.5641、删除后恢复；建仓日期过滤曲线起点；刷新持久化自恢复；清空后回空态；非法输入与补仓日期早于建仓均拦截；全程零报错。FR-03 验收标准逐条通过，计算样例手工核对一致。
 
-### M5 部署与收尾 `[ ]`（2026-11-19 用户指定：发布目标由 GitHub 改为 Gitee）
-- [ ] Gitee 仓库已建：`https://gitee.com/alotslost/gold-data`（用户 2026-11-19 提供）→ 首次推送
-- [ ] Gitee Pages 启用（仓库「服务 → Gitee Pages」，发布分支选仓库根目录；注意：免费版不支持自动部署，每次推送后需手动点「更新」重新发布）
-- [ ] 若未来启用快照方案：用本地脚本/系统定时任务代替 GitHub Actions（Gitee 免费版无定时流水线；当前未启用，仅登记）
-- [ ] 线上自测：三个 Tab、自选与持仓持久化、移动端浏览（https://alotslost.gitee.io/gold-data）
-- [ ] 更新 completed.md 汇总 v1.0 全部交付功能
-- **验证**：Gitee Pages URL（https://alotslost.gitee.io/gold-data）可公开访问且功能与本地一致。
+### M5 部署与收尾 `[x]`（2026-11-19 完成）
+- [x] 远端切换为 GitHub：`git@github.com:alotslost/Gold-Online.git`（仓库已配公钥，SSH 22 直连推送成功；known_hosts 已预存 github.com 与 ssh.github.com:443 主机密钥）
+- [x] 推送验证：main 分支已推送；raw.githubusercontent 经本地代理可访问到 index.html/esa.jsonc（网页直连不稳定，代理约定保留）
+- [x] GitHub Pages 已开启（用户操作）：main/根目录，push 自动发布
+- [x] 线上自测（https://alotslost.github.io/Gold-Online/）：宏观三图真实数据渲染（金价 243 点、最新 801.93 元/克）、自选 4 卡、持仓空态正确、深浅色切换正常（深色 #0D0D0F）、OCR 组件文件全部 200 可达、零报错
+- [x] 更新 completed.md 汇总 v1.0 全部交付功能
+- **验证**：已通过——https://alotslost.github.io/Gold-Online/ 可公开访问，功能与本地一致。v1.0 全部交付。
 
 ## 2. 数据源实测结论（M1 已定案，2026-11-19）
 

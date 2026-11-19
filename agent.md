@@ -47,8 +47,8 @@ scripts/                # 快照抓取脚本（若启用，python3）
 |---|---|
 | 架构 | 纯静态，无后端、无构建工具链；原生 HTML/CSS/JS + ECharts |
 | 本地预览 | `python3 -m http.server 8000`，访问 `http://localhost:8000`（ES Modules 不能 file:// 直开） |
-| 网络代理 | GitHub/npm 等境外资源下载需配置本地代理 `http://127.0.0.1:7890`（如 `https_proxy=...` 环境变量）；Gitee 国内直连无需代理 |
-| 部署 | Gitee Pages（仓库 https://gitee.com/alotslost/gold-data，线上 https://alotslost.gitee.io/gold-data；免费版每次推送后需手动「更新」发布；开启需实名认证）；若启用快照方案，用本地定时任务更新 `data/*.json` |
+| 网络代理 | git SSH 推送（github.com:22）直连可用；github 网页与 raw.githubusercontent 访问不稳定，需本地代理 `http://127.0.0.1:7890`；Gitee/npm 境外资源同需要时可用代理 |
+| 部署 | GitHub 仓库 alotslost/Gold-Online（SSH 推送直连可用）+ GitHub Pages 发布（push main 自动发布，免费版需公开仓库）；esa.jsonc 为 ESA Pages 遗留配置，在 GitHub Pages 下无作用、保留无害 |
 | 个人数据 | localStorage，key 前缀 `hjzx.`；不采集不上传 |
 | 平台 | macOS（darwin），shell=bash |
 

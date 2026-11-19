@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案 C · 曜石金（深色优先） — 黄金在线 UI 示意</title>
+<style>
+  /* 方案 C：曜石金（深色优先的沉静金融风，弱化金色的克制点缀，亮色为暖纸白） */
+  :root[data-theme="dark"] {
+    --bg: #141416;
+    --card: #1D1D20;
+    --text: #E9E9EC;
+    --text-2: #9A9AA3;
+    --border: rgba(255, 255, 255, 0.08);
+    --accent: #C8A44D;        /* 弱化的香槟金 */
+    --accent-soft: rgba(200, 164, 77, 0.14);
+    --up: #E5484D;
+    --down: #46A758;
+    --grid: rgba(255, 255, 255, 0.07);
+    --topbar-bg: rgba(24, 24, 27, 0.82);
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --radius: 12px;
+  }
+  :root[data-theme="light"] {
+    --bg: #FAF9F7;            /* 暖纸白 */
+    --card: #FFFFFF;
+    --text: #23201C;
+    --text-2: #837C72;
+    --border: rgba(35, 32, 28, 0.10);
+    --accent: #9C7C35;        /* 更深的金 */
+    --accent-soft: rgba(156, 124, 53, 0.10);
+    --up: #C93C3C;
+    --down: #3D8A54;
+    --grid: rgba(35, 32, 28, 0.07);
+    --topbar-bg: rgba(255, 255, 255, 0.8);
+    --shadow: 0 1px 3px rgba(35, 32, 28, 0.05);
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--topbar-bg);
+    backdrop-filter: saturate(160%) blur(18px);
+    -webkit-backdrop-filter: saturate(160%) blur(18px);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar-inner {
+    max-width: 1000px; margin: 0 auto; padding: 12px 20px;
+    display: flex; align-items: center; gap: 22px;
+  }
+  .brand { font-size: 19px; margin: 0; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+  .tabs { display: flex; gap: 4px; flex: 1; }
+  .tab {
+    border: none; background: transparent; padding: 6px 14px; border-radius: 10px;
+    font-size: 14px; color: var(--text-2); cursor: pointer;
+  }
+  .tab.is-active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .theme-toggle {
+    border: 1px solid var(--border); background: var(--card);
+    width: 34px; height: 34px; border-radius: 50%;
+    font-size: 15px; cursor: pointer; line-height: 1;
+  }
+  .container { max-width: 1000px; margin: 0 auto; padding: 22px 20px 40px; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin: 4px 0 14px; }
+  .section-title { font-size: 20px; font-weight: 700; margin: 0; letter-spacing: 0.2px; }
+  .section-note { font-size: 12px; color: var(--text-2); }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 14px 16px;
+  }
+  .stat-label { font-size: 12px; color: var(--text-2); }
+  .stat-value { font-size: 22px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .stat-sub { font-size: 12px; margin-top: 1px; color: var(--text-2); }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 14px;
+  }
+  .card-title { font-size: 15px; font-weight: 600; margin: 0 0 10px; }
+  .chart { width: 100%; height: 300px; }
+  .card-source { margin: 8px 0 0; font-size: 12px; color: var(--text-2); }
+  .fund-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .fund-name { font-size: 15px; font-weight: 600; }
+  .fund-code { font-size: 12px; color: var(--text-2); margin-left: 6px; font-weight: 400; }
+  .fund-info { font-size: 13px; color: var(--text-2); margin-bottom: 8px; }
+  .fund-info strong { color: var(--text); font-size: 15px; }
+  .chg-down { color: var(--down); }
+  .down { color: var(--down); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-2); font-weight: 500; font-size: 12px; }
+  .mini-btn {
+    border: 1px solid var(--accent); background: transparent; color: var(--accent);
+    border-radius: 999px; padding: 4px 14px; font-size: 12px; cursor: pointer;
+  }
+  @media (max-width: 700px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <h1 class="brand">黄金在线</h1>
+    <nav class="tabs">
+      <button class="tab is-active">宏观指数</button>
+      <button class="tab">自选基金</button>
+      <button class="tab">持仓盈亏</button>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" title="切换深浅色">☀️</button>
+  </div>
+</header>
+<main class="container">
+  <div class="section-head">
+    <h2 class="section-title">黄金价格</h2>
+    <span class="section-note">示意数据 · 方案 C：曜石金（深色优先）</span>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">当前净值</div><div class="stat-value">1.7486</div><div class="stat-sub">2026-11-18</div></div>
+    <div class="stat"><div class="stat-label">当前市值</div><div class="stat-value">26,597.52</div><div class="stat-sub">元</div></div>
+    <div class="stat"><div class="stat-label">浮动盈亏</div><div class="stat-value down">−8,402.48</div><div class="stat-sub down">−24.01%</div></div>
+    <div class="stat"><div class="stat-label">持有成本单价</div><div class="stat-value">2.3010</div><div class="stat-sub">元/份</div></div>
+  </div>
+  <div class="card">
+    <h2 class="card-title">上金所黄金9999（元/克）</h2>
+    <div class="chart" id="chart1"></div>
+    <p class="card-source">来源：东方财富行情 · 日频 · 最新 2026-11-19</p>
+  </div>
+  <div class="card">
+    <div class="fund-head">
+      <div><span class="fund-name">华夏黄金ETF联接C</span><span class="fund-code">008702</span></div>
+      <button class="mini-btn">保存</button>
+    </div>
+    <div class="fund-info">最新净值 <strong>1.7486</strong>（2026-11-18） · 日涨跌 <span class="chg-down">−2.51%</span></div>
+    <div class="chart" id="chart2" style="height: 180px;"></div>
+  </div>
+  <div class="card">
+    <h2 class="card-title">补仓记录</h2>
+    <table>
+      <thead><tr><th>申请日期</th><th>生效净值日</th><th>金额（元）</th><th>补仓时净值</th><th>新增份额</th><th>补仓后成本</th></tr></thead>
+      <tbody>
+        <tr><td>2026-09-15</td><td>2026-09-15</td><td>5,000.00</td><td>1.8412</td><td>2,715.61</td><td>2.3288</td></tr>
+        <tr><td>2026-11-19</td><td>2026-11-19</td><td>1,000.00</td><td>1.7486</td><td>571.89</td><td>2.3010</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+<script src="../vendor/echarts/echarts.min.js"></script>
+<script>
+  const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const toggleBtn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  // 深色优先：默认深色，仍支持跟随系统与手动切换
+  root.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+  function syncBtn() { toggleBtn.textContent = root.dataset.theme === 'dark' ? '☀️' : '🌙'; }
+  toggleBtn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    syncBtn(); render();
+  });
+  syncBtn();
+
+  function genSeries(base, vol, n, seed) {
+    let s = seed, v = base;
+    const out = [];
+    const rnd = () => { s = (s * 9301 + 49297) % 233280; return s / 233280 - 0.5; };
+    const now = new Date('2026-11-19').getTime();
+    for (let i = n - 1; i >= 0; i--) {
+      v = Math.max(base * 0.7, v * (1 + rnd() * vol));
+      out.push([new Date(now - i * 86400000).toISOString().slice(0, 10), +v.toFixed(2)]);
+    }
+    return out;
+  }
+  const chart1 = echarts.init(document.getElementById('chart1'));
+  const chart2 = echarts.init(document.getElementById('chart2'));
+  function render() {
+    const text = css('--text-2'), grid = css('--grid'), line = css('--accent');
+    const axis = { axisLabel: { color: text, fontSize: 11 }, axisLine: { lineStyle: { color: grid } } };
+    chart1.setOption({
+      grid: { left: 52, right: 16, top: 14, bottom: 32 },
+      tooltip: { trigger: 'axis' },
+      xAxis: { type: 'time', ...axis },
+      yAxis: { type: 'value', scale: true, splitLine: { lineStyle: { color: grid } }, axisLabel: { color: text, fontSize: 11 } },
+      series: [{ type: 'line', showSymbol: false, sampling: 'lttb', data: genSeries(760, 0.02, 180, 42), lineStyle: { color: line, width: 2 }, areaStyle: { opacity: 0.10, color: line } }],
+    });
+    chart2.setOption({
+      grid: { left: 44, right: 10, top: 10, bottom: 24 },
+      xAxis: { type: 'time', axisLabel: { show: false }, axisLine: { show: false } },
+      yAxis: { type: 'value', scale: true, splitLine: { show: false }, axisLabel: { show: false } },
+      series: [{ type: 'line', showSymbol: false, sampling: 'lttb', data: genSeries(1.7, 0.018, 90, 7), lineStyle: { color: line, width: 1.6 } }],
+    });
+  }
+  render();
+  window.addEventListener('resize', () => { chart1.resize(); chart2.resize(); });
+</script>
+</body>
+</html>

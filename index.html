@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>黄金在线 · 黄金基金投资看板</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script>
+    // 打开方式检测：file:// 下 ES Modules 被浏览器拦截，整页 JS 不运行，需要走本地服务器
+    if (location.protocol === 'file:') {
+      document.addEventListener('DOMContentLoaded', function () {
+        var b = document.createElement('div');
+        b.style.cssText = 'background:#d03a2b;color:#fff;padding:10px 16px;font-size:14px;text-align:center;line-height:1.6;';
+        b.textContent = '检测到直接打开本地文件（file://），页面脚本无法运行。请在项目目录运行 python3 -m http.server 8000，然后用浏览器访问 http://localhost:8000';
+        document.body.insertBefore(b, document.body.firstChild);
+      });
+    }
+  </script>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <h1 class="brand">黄金在线</h1>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="主导航">
+        <button class="tab is-active" role="tab" aria-selected="true" data-tab="macro">宏观指数</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="funds">自选基金</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="position">持仓盈亏</button>
+      </nav>
+      <button class="theme-toggle" id="theme-toggle" title="切换深浅色">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Tab 1：宏观指数（M2 实现） -->
+    <section class="panel is-active" id="panel-macro" role="tabpanel" aria-labelledby="tab-macro">
+      <div class="card" data-chart-card="gold">
+        <h2 class="card-title">黄金价格</h2>
+        <div class="chart" id="chart-gold"></div>
+        <p class="card-source" data-source-note="gold"></p>
+      </div>
+      <div class="card" data-chart-card="fed">
+        <h2 class="card-title">美联储利率</h2>
+        <div class="chart" id="chart-fed"></div>
+        <p class="card-source" data-source-note="fed"></p>
+      </div>
+      <div class="card" data-chart-card="cnbond">
+        <h2 class="card-title">中国国债收益率</h2>
+        <div class="chart" id="chart-cnbond"></div>
+        <p class="card-source" data-source-note="cnbond"></p>
+      </div>
+    </section>
+
+    <!-- Tab 2：自选基金 -->
+    <section class="panel" id="panel-funds" role="tabpanel" aria-labelledby="tab-funds" hidden>
+      <div class="card">
+        <form id="fund-search-form" class="search-bar">
+          <input id="fund-code-input" inputmode="numeric" maxlength="6" autocomplete="off"
+                 placeholder="输入 6 位基金代码，如 000216" aria-label="基金代码">
+          <button type="submit" class="btn-primary">查询</button>
+        </form>
+        <p class="search-error" id="fund-search-error" hidden></p>
+      </div>
+      <div id="fund-query-result"></div>
+      <h2 class="section-title">个人基金</h2>
+      <p class="mine-empty" id="mine-empty" hidden>还没有保存的基金：在下方看板卡片或查询结果右上角点「保存」，即可把常用基金固定到这里，下次打开自动展示。</p>
+      <div class="fund-grid" id="board-mine"></div>
+    <div class="section-head">
+      <h2 class="section-title">黄金基金看板</h2>
+      <div class="mode-bar" id="board-gold-mode" role="group" aria-label="折线数据类型"></div>
+    </div>
+      <div class="fund-grid" id="board-gold"></div>
+    </section>
+
+    <!-- Tab 3：持仓盈亏 -->
+    <section class="panel" id="panel-position" role="tabpanel" aria-labelledby="tab-position" hidden>
+      <div class="card">
+        <h2 class="card-title">持仓录入</h2>
+        <div class="ocr-bar">
+          <button type="button" id="pos-ocr-btn" class="range-btn ocr-btn">导入持仓截图</button>
+          <input type="file" id="pos-ocr-file" accept="image/*" hidden>
+          <span class="ocr-status" id="pos-ocr-status">支持支付宝/天天基金资产详情截图，本地识别后填入表单，请核对再保存。注意：截图需包含基金代码（如页面顶部「008702」字样完整可见），未识别到时代码需手动填写</span>
+        </div>
+        <form id="position-form" class="pos-form">
+          <label>基金代码
+            <input id="pos-code" inputmode="numeric" maxlength="6" list="pos-code-list" autocomplete="off" placeholder="如 000216">
+            <datalist id="pos-code-list"></datalist>
+          </label>
+          <label>投入本金（元）
+            <input id="pos-principal" type="number" min="0" step="0.01" placeholder="如 10000">
+          </label>
+          <label>持有成本单价（元/份）
+            <input id="pos-cost" type="number" min="0" step="0.0001" placeholder="如 2.5">
+          </label>
+          <label>建仓日期（可选）
+            <input id="pos-opened" type="date">
+          </label>
+          <button type="submit" class="btn-primary">保存持仓并计算</button>
+          <button type="button" id="pos-clear" class="btn-danger" hidden>清空持仓数据</button>
+        </form>
+        <p class="search-error" id="pos-error" hidden></p>
+      </div>
+
+      <p class="placeholder" id="pos-placeholder">还没有录入持仓：填写上方表单（投入本金与持有成本单价），即可生成盈亏变化与补仓模拟。</p>
+
+      <div id="position-stats" class="stat-grid" hidden></div>
+
+      <div id="position-charts" hidden>
+        <div class="card">
+          <div class="range-bar" id="pos-range"></div>
+          <h2 class="card-title">盈亏变化（元）</h2>
+          <div class="chart" id="chart-pos-pnl"></div>
+          <p class="card-source" id="pos-note"></p>
+        </div>
+        <div class="card">
+          <h2 class="card-title">持有成本单价（元/份，补仓日阶跃下降）</h2>
+          <div class="chart" id="chart-pos-cost"></div>
+        </div>
+      </div>
+
+      <div class="card" id="topup-card" hidden>
+        <h2 class="card-title">补仓模拟</h2>
+        <form id="topup-form" class="topup-form">
+          <label>补仓金额（元）
+            <input id="topup-amount" type="number" min="0" step="0.01" placeholder="如 5000">
+          </label>
+          <label>补仓日期
+            <input id="topup-date" type="date">
+          </label>
+          <button type="submit" class="btn-primary">添加补仓</button>
+        </form>
+        <p class="search-error" id="topup-error" hidden></p>
+        <table class="topup-table">
+          <thead>
+            <tr><th>申请日期</th><th>生效净值日</th><th>金额（元）</th><th>补仓时净值</th><th>新增份额</th><th>补仓后成本单价</th><th></th></tr>
+          </thead>
+          <tbody id="topup-tbody"></tbody>
+        </table>
+        <p class="mine-empty" id="topup-empty" hidden>暂无补仓记录：填写上方金额后点「添加补仓」，成本单价与盈亏将即时重算。</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p class="footer-note">
+        数据来源：基金净值 - 天天基金（fund.eastmoney.com）；黄金价格 - 东方财富行情；美联储利率 - FRED（圣路易斯联储）；中国国债收益率 - 中债/东方财富。
+        数据按日更新，仅供参考，不构成投资建议。
+      </p>
+    </div>
+  </footer>
+
+  <script src="vendor/echarts/echarts.min.js"></script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
